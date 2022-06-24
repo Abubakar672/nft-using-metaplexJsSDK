@@ -117,6 +117,8 @@ const setNft_create = async() => {
     const { nft } = await metaplex.nfts().create({
         uri: "https://ls3cbsrrce2el32w4uwf2kri3c6rbuxi4x2rsl4dzhveomkvo4.arweave.net/XLYgyjERNEXvVuUsXSoo2L0Q0ujl9Rkvg8_nqRzFVd8/",
         isMutable: true,
+        maxSupply: 100,
+        
     });
     
     console.log('=====> setNft_create: ', nft, '\n\n');
@@ -137,7 +139,7 @@ const setNft_update = async(my_nft) => {
 
     const { nft: updatedNft } = await metaplex.nfts().update(my_nft, {
         name: "My NFT Name Changed",
-        maxSupply: 10,
+        maxSupply: 100,
         uri: "https://ls3cbsrrce2el32w4uwf2kri3c6rbuxi4x2rsl4dzhveomkvo4.arweave.net/XLYgyjERNEXvVuUsXSoo2L0Q0ujl9Rkvg8_nqRzFVd8/",
     });
 
@@ -157,13 +159,16 @@ const setNft_printNewEdition = async(my_nft) => {
     console.log('=====> setNft_update: updatedNft: ', printedNft, '\n\n');
 }
 
+
+
 async function main_set(){
-    await setNft_uploadMetadata();
+    // await setNft_uploadMetadata();
     // await setNft_create();
     // await get_my_nft();
     // await setNft_update(await get_my_nft());
-    // await setNft_printNewEdition(await get_my_nft());
+    await setNft_printNewEdition(await get_my_nft());
 
 }
 main_set();
+
 
