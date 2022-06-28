@@ -29,7 +29,12 @@ const metaplex = Metaplex.make(connection)
 
 // console.log('=====> metadata: ', metaplex, '\n\n')
 
-const getNft_findByMint = async(mintID) => {
+
+
+
+
+// 1: accepts a mint public key (nft public) and returns nft object
+const findByMint = async(metaplex, mintID) => {
     const mint = new PublicKey(mintID);
     const nft = await metaplex.nfts().findByMint(mint);
     console.log('=====> nft: ', nft, '\n\n');
@@ -37,17 +42,18 @@ const getNft_findByMint = async(mintID) => {
     const imageUrl = nft.metadata.image;
     const supply = nft.originalEdition.supply;
     const maxSupply = nft.originalEdition.maxSupply;
-    console.log('=====> getNft_findByMint: ', imageUrl, ' ',  supply.toString(), ' ', maxSupply.toString(), '\n\n');
+    console.log('=====> findByMint: ', imageUrl, ' ',  supply.toString(), ' ', maxSupply.toString(), '\n\n');
 }
 
 
-
-const getNft_findAllByMintList = async(mintIDs) => {
+// 2: accepts an array of mint addresses and returns an array of Nfts
+// but nfts will not have their JSON metadata nor their edition account loaded
+const findAllByMintList = async(metaplex, mintIDs) => {
     const mintA = new PublicKey(mintIDs[0]);
     const mintB = new PublicKey(mintIDs[1]);
     const [nft, nftB] = await metaplex.nfts().findAllByMintList([mintA, mintB]);
     
-    console.log('=====> getNft_findAllByMintList: ', nftB, '\n\n');
+    console.log('=====> findAllByMintList: ', nftB, '\n\n');
 
     await nft.metadataTask.run();
     // await nft.EditionTask.run();
@@ -65,73 +71,68 @@ const getNft_findAllByMintList = async(mintIDs) => {
 }
 
 
-
-const getNft_findAllByOwner = async(ownerAddress) => {
+// 3: accepts a public key and returns all Nfts owned by that public key
+// but nfts will not have their JSON metadata nor their edition account loaded
+const findAllByOwner = async(metaplex, owner_publicKey) => {
     // const myNfts = await metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
-    const myNfts = await metaplex.nfts().findAllByOwner(new PublicKey(ownerAddress));
-    console.log('=====> getNft_findAllByOwner: ', myNfts.mint, '\n\n');
+    const myNfts = await metaplex.nfts().findAllByOwner(owner_publicKey);
+    console.log('=====> findAllByOwner: ', myNfts.length, '\n\n');
 
 }
 
 
-
-const getNft_findAllByCreator = async() => {
+// 4: accepts a public key and returns all Nfts that have that public key registered as their first creator
+// but nfts will not have their JSON metadata nor their edition account loaded
+const findAllByCreator = async(metaplex, creatorPublicKey) => {
     const nft1 = await metaplex.nfts().findAllByCreator(creatorPublicKey);
-    const nft2= await metaplex.nfts().findAllByCreator(creatorPublicKey, 1); // Equivalent to the previous line.
-    const nft3 = await metaplex.nfts().findAllByCreator(creatorPublicKey, 2); // Now matching the second creator field.
+    // const nft2= await metaplex.nfts().findAllByCreator(creatorPublicKey, 1); // Equivalent to the previous line.
+    // const nft3 = await metaplex.nfts().findAllByCreator(creatorPublicKey, 2); // Now matching the second creator field.
 }
 
-const getNft_findAllByCandyMachine = async() => {
+
+// 5: accepts the public key of a Candy Machine and returns all Nfts that have been minted from that Candy Machine(by candy machine id)
+// but nfts will not have their JSON metadata nor their edition account loaded
+const findAllByCandyMachine = async(metaplex , cm_publicKey) => {
     // const nft1 = await metaplex.nfts().findAllByCandyMachine(candyMachinePublicKey);
-    const nft1 = await metaplex.nfts().findAllByCandyMachine(new PublicKey('2ocxydUmMj1r2HWU18GYhreKMrpyhpDqUz1xm348RPvh'));
-    // const nft2 = await metaplex.nfts().findAllByCandyMachine(candyMachinePublicKey, 2); // Equivalent to the previous line.
-    // const nft3 = await metaplex.nfts().findAllByCandyMachine(candyMachinePublicKey, 1); // Now finding NFTs for Candy Machine v1.
+    const nft = await metaplex.nfts().findAllByCandyMachine(cm_publicKey);
+    // const nft2 = await metaplex.nfts().findAllByCandyMachine(cm_publicKey, 2); // Equivalent to the previous line.
+    // const nft3 = await metaplex.nfts().findAllByCandyMachine(cm_publicKey, 1); // Now finding NFTs for Candy Machine v1.
 
-    console.log('=====> getNft_findAllByCandyMachine: ', nft1, '\n\n');
+    console.log('=====> getNft_findAllByCandyMachine: ', nft, '\n\n');
 }
 
-async function main_get(){
-    // await getNft_findByMint("8kzRZtRSGcHDJTfrCKsZfa2neohNGEFYdf7mWvKdx2YB");
-    // await getNft_findAllByMintList(["8kzRZtRSGcHDJTfrCKsZfa2neohNGEFYdf7mWvKdx2YB", "8kzRZtRSGcHDJTfrCKsZfa2neohNGEFYdf7mWvKdx2YB"]);
-    // await getNft_findAllByOwner('6nZRR27JKqK1isskNgtib6n6Und7xuJYPhjWfiSUypEd');
-    // await getNft_findAllByCandyMachine();
-}
-main_get();
 
 
 
-
-
-
-
-
-// ************************** set ***************************************************
-
-
-const setNft_uploadMetadata = async() => {
+// 6: create metadata uri for the nft metadata
+const uploadMetadata = async(metaplex) => {
     const { uri } = await metaplex.nfts().uploadMetadata({
         name: "My NFT",
-        description: "My description",
-        image: "https://arweave.net/123",
+        description: "My description of the metaplex nfts file",
+        image: "https://img.freepik.com/free-vector/nft-non-fungible-token-non-fungible-tokens-icon-covering-concept-nft-high-tech-technology-symbol-logo-vector_208588-2005.jpg?w=2000",
     });
     
     console.log('=====> setNft_uploadMetadata: ', uri, '\n\n');
+    return uri;
 }
 
 
-const setNft_create = async() => {
+// 7: create new nft after creating metadata
+const create_nft = async(metaplex) => {
     const { nft } = await metaplex.nfts().create({
-        uri: "https://ls3cbsrrce2el32w4uwf2kri3c6rbuxi4x2rsl4dzhveomkvo4.arweave.net/XLYgyjERNEXvVuUsXSoo2L0Q0ujl9Rkvg8_nqRzFVd8/",
+        uri: await uploadMetadata(metaplex
+            ),
+        // uri: "https://ls3cbsrrce2el32w4uwf2kri3c6rbuxi4x2rsl4dzhveomkvo4.arweave.net/XLYgyjERNEXvVuUsXSoo2L0Q0ujl9Rkvg8_nqRzFVd8/",
         isMutable: true,
         maxSupply: 100,
-        
     });
     
     console.log('=====> setNft_create: ', nft, '\n\n');
 }
 
 
-async function get_my_nft(){
+//8: return the last nft from a wallet address
+async function get_my_nft(metaplex, wallet){
     const myNfts = await metaplex.nfts().findAllByOwner(wallet.publicKey);
     console.log('=====> get my Nft findAllByOwner: ', myNfts.length, '\n\n');
     const nft = await metaplex.nfts().findByMint(myNfts[myNfts.length-1].mint);
@@ -141,12 +142,13 @@ async function get_my_nft(){
 }
 
 
-const setNft_update = async(my_nft) => {
+// 9: update the nft detail and their metadata (by new uri)
+const update_nft = async(metaplex, my_nft) => {
 
     const { nft: updatedNft } = await metaplex.nfts().update(my_nft, {
-        name: "My NFT Name Changed",
+        name: "NFT (28 jun 1:15pm)",
         maxSupply: 100,
-        uri: "https://ls3cbsrrce2el32w4uwf2kri3c6rbuxi4x2rsl4dzhveomkvo4.arweave.net/XLYgyjERNEXvVuUsXSoo2L0Q0ujl9Rkvg8_nqRzFVd8/",
+        uri: await uploadMetadata(metaplex),
     });
 
 
@@ -159,22 +161,33 @@ const setNft_update = async(my_nft) => {
 }
 
 
-const setNft_printNewEdition = async(my_nft) => {
+
+// 10: create new print edition of an existing nft or from master edition
+const printNewEdition = async(metaplex, my_nft) => {
 
     const { nft: printedNft } = await metaplex.nfts().printNewEdition(my_nft.mint);
-    console.log('=====> setNft_update: updatedNft: ', printedNft, '\n\n');
+    console.log('=====> setNft_printNewEdition: ', printedNft, '\n\n');
 }
 
 
 
 async function main_set(){
-    await setNft_uploadMetadata();
-    // await setNft_create();
-    // await get_my_nft();
-    // await setNft_update(await get_my_nft());
-    // await setNft_printNewEdition(await get_my_nft());
+    // await findByMint(metaplex, "8kzRZtRSGcHDJTfrCKsZfa2neohNGEFYdf7mWvKdx2YB");
+    // await findAllByMintList(metaplex, ["8kzRZtRSGcHDJTfrCKsZfa2neohNGEFYdf7mWvKdx2YB", "8kzRZtRSGcHDJTfrCKsZfa2neohNGEFYdf7mWvKdx2YB"]);
+    // await findAllByOwner(metaplex, wallet.publicKey);
+    // await findAllByCreator = async(metaplex, creatorPublicKey);
+    // await findAllByCandyMachine(metaplex, new PublicKey('2ocxydUmMj1r2HWU18GYhreKMrpyhpDqUz1xm348RPvh'));
+
+
+    // await uploadMetadata(metaplex);
+    // await create_nft(metaplex);
+    // await get_my_nft(metaplex, wallet);
+    // await update_nft(metaplex, await get_my_nft(metaplex, wallet));
+    await printNewEdition(metaplex, await get_my_nft(metaplex, wallet));
 
 }
+
+
 main_set();
 
 
