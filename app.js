@@ -107,7 +107,7 @@ const findAllByCandyMachine = async(metaplex , cm_publicKey) => {
 // 6: create metadata uri for the nft metadata
 const uploadMetadata = async(metaplex) => {
     const { uri } = await metaplex.nfts().uploadMetadata({
-        name: "My NFT",
+        name: "NFT jun 28 4:20",
         description: "My description of the metaplex nfts file",
         image: "https://img.freepik.com/free-vector/nft-non-fungible-token-non-fungible-tokens-icon-covering-concept-nft-high-tech-technology-symbol-logo-vector_208588-2005.jpg?w=2000",
     });
@@ -132,13 +132,21 @@ const create_nft = async(metaplex) => {
 
 
 //8: return the last nft from a wallet address
-async function get_my_nft(metaplex, wallet){
+async function get_my_nft(metaplex, wallet, nft_name){
     const myNfts = await metaplex.nfts().findAllByOwner(wallet.publicKey);
     console.log('=====> get my Nft findAllByOwner: ', myNfts.length, '\n\n');
-    const nft = await metaplex.nfts().findByMint(myNfts[myNfts.length-1].mint);
-    console.log('=====> get my Nft findByMint: ', nft, '\n\n********************************************\n\n');
-    
-    return nft;
+    for(let nft of myNfts){
+        if (nft.name == nft_name)
+        {
+            nft = await metaplex.nfts().findByMint(nft.mint);
+            console.log('=====> get my Nft findByMint: ', nft, '\n\n********************************************\n\n');
+            return nft;
+        }
+    }
+    // const nft = await metaplex.nfts().findByMint(myNfts[myNfts.length-1].mint);
+    // console.log('=====> get my Nft findByMint: ', nft, '\n\n********************************************\n\n');
+
+    return null;
 }
 
 
@@ -148,6 +156,7 @@ const update_nft = async(metaplex, my_nft) => {
     const { nft: updatedNft } = await metaplex.nfts().update(my_nft, {
         name: "NFT (28 jun 1:15pm)",
         maxSupply: 100,
+        isMutable: true,
         uri: await uploadMetadata(metaplex),
     });
 
@@ -181,9 +190,9 @@ async function main_set(){
 
     // await uploadMetadata(metaplex);
     // await create_nft(metaplex);
-    // await get_my_nft(metaplex, wallet);
-    // await update_nft(metaplex, await get_my_nft(metaplex, wallet));
-    await printNewEdition(metaplex, await get_my_nft(metaplex, wallet));
+    // await get_my_nft(metaplex, wallet, "NFT jun 28 4:20");
+    // await update_nft(metaplex, await get_my_nft(metaplex, wallet, "NFT jun 28 4:20"));
+    await printNewEdition(metaplex, await get_my_nft(metaplex, wallet, "NFT jun 28 4:20"));
 
 }
 
