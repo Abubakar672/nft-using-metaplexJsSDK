@@ -1,3 +1,5 @@
+// node --experimental-json-modules ./app.js
+
 // const {  Metaplex, keypairIdentity, bundlrStorage } = require("@metaplex-foundation/js");
 // const {  Connection, clusterApiUrl, Keypair , PublicKey} = require("@solana/web3.js");
 
@@ -8,7 +10,11 @@ import { Connection, clusterApiUrl, Keypair, PublicKey} from "@solana/web3.js";
 const connection = new Connection(clusterApiUrl("devnet"));
 // const wallet = Keypair.generate();
 
-import wallet_file from './wallet.json' assert {type: "json"};
+import wallet_file from './wallet.json' ;//assert {type: "json"};
+// import { readFile } from 'fs/promises';
+
+// const json = JSON.parse(await readFile(new URL('./wallet.json', import.meta.url)));
+
 const wallet = Keypair.fromSecretKey(Uint8Array.from(wallet_file));
 // console.log('=====> wallet:', wallet)
 
@@ -162,11 +168,11 @@ const setNft_printNewEdition = async(my_nft) => {
 
 
 async function main_set(){
-    // await setNft_uploadMetadata();
+    await setNft_uploadMetadata();
     // await setNft_create();
     // await get_my_nft();
     // await setNft_update(await get_my_nft());
-    await setNft_printNewEdition(await get_my_nft());
+    // await setNft_printNewEdition(await get_my_nft());
 
 }
 main_set();
