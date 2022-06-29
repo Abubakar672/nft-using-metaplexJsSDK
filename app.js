@@ -107,7 +107,7 @@ const findAllByCandyMachine = async(metaplex , cm_publicKey) => {
 // 6: create metadata uri for the nft metadata
 const uploadMetadata = async(metaplex) => {
     const { uri } = await metaplex.nfts().uploadMetadata({
-        name: "NFT jun 28 4:20",
+        name: "NFT jun 29 12:30",
         description: "My description of the metaplex nfts file",
         image: "https://img.freepik.com/free-vector/nft-non-fungible-token-non-fungible-tokens-icon-covering-concept-nft-high-tech-technology-symbol-logo-vector_208588-2005.jpg?w=2000",
     });
@@ -124,7 +124,8 @@ const create_nft = async(metaplex) => {
             ),
         // uri: "https://ls3cbsrrce2el32w4uwf2kri3c6rbuxi4x2rsl4dzhveomkvo4.arweave.net/XLYgyjERNEXvVuUsXSoo2L0Q0ujl9Rkvg8_nqRzFVd8/",
         isMutable: true,
-        maxSupply: 100,
+        maxSupply: 10,
+        sellerFeeBasisPoints: 1500,
     });
     
     console.log('=====> setNft_create: ', nft, '\n\n');
@@ -158,6 +159,7 @@ const update_nft = async(metaplex, my_nft) => {
         maxSupply: 100,
         isMutable: true,
         uri: await uploadMetadata(metaplex),
+        sellerFeeBasisPoints: 1000,
     });
 
 
@@ -189,10 +191,10 @@ async function main_set(){
 
 
     // await uploadMetadata(metaplex);
-    // await create_nft(metaplex);
+    await create_nft(metaplex);
     // await get_my_nft(metaplex, wallet, "NFT jun 28 4:20");
     // await update_nft(metaplex, await get_my_nft(metaplex, wallet, "NFT jun 28 4:20"));
-    await printNewEdition(metaplex, await get_my_nft(metaplex, wallet, "NFT jun 28 4:20"));
+    // await printNewEdition(metaplex, await get_my_nft(metaplex, wallet, "NFT jun 28 4:20"));
 
 }
 
